@@ -203,8 +203,9 @@ export QEMUFLAGS
 test:
 	$(PYTHON3)                                                             	\
 		-m pytest tests -p no:cacheprovider                                 \
-		--qemu $(QEMU)
-
+		--qemu $(QEMU)                                                      \
+		$(if $(FLAKE_RUNS),--flake-finder --flake-runs=$(FLAKE_RUNS))
+    
 # トラブルシューティングに役立つ情報を表示するコマンド
 .PHONY: doctor
 doctor:
