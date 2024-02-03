@@ -1,0 +1,34 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    types: [opened, synchronize]
+  
+jobs:
+  linux_build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install packages
+        run: sudo apt-get update && sudo apt-get install -y llvm clang lld python3-pip qemu-system tshark
+      - name: Install pip packages
+        run: pip3 install --user -r tools/requirements.txt
+      - name: make doctor
+        run: make doctor
+      - name: Debug build
+        run: make build -j2
+      - name: Run tests (debug build, 1 CPU)
+        run: make test -j2
+        env:
+          TEST_DEFAULT_TIMEOUT: 10
+          FLAKE_RUNS: 4
+          CPUS: 1
+      - name: Run tests (debug build, 4 CPUs)
+        run: make test -j2
+        env:
+          TEST_DEFAULT_TIMEOUT: 10
+          FLAKE_RUNS: 4
+          CPUS: 4
