@@ -164,7 +164,7 @@ QEMUFLAGS += -drive file=$(hinafs_img),if=none,format=raw,id=drive0
 QEMUFLAGS += -device virtio-blk-device,drive=drive0,bus=virtio-mmio-bus.0
 QEMUFLAGS += -device virtio-net-device,netdev=net0,bus=virtio-mmio-bus.1
 QEMUFLAGS += -object filter-dump,id=fiter0,netdev=net0,file=virtio-net.pcap
-QEMUFLAGS += -netdev user,id=net0,hostfwd=tcp:127.0.0.1:1234-:80
+QEMUFLAGS += -netdev user,id=net0
 
 wasmos_elf     := $(BUILD_DIR)/wasmos.elf
 boot_elf       := $(BUILD_DIR)/servers/vm.elf
@@ -197,15 +197,13 @@ gdb:
 	$(PROGRESS) GDB $(BUILD_DIR)/gdbinit
 	$(GDB) -q -ex "source $(BUILD_DIR)/gdbinit"
 
-# 自動テスト
+# Automated test
 export QEMUFLAGS
 .PHONY: test
 test:
-	$(PYTHON3)                                                             \
-		-m pytest tests.py -p no:cacheprovider                         \
-		--qemu "$(QEMU)" --make "$(MAKE)"                              \
-		$(if $(FLAKE_RUNS),--flake-finder --flake-runs=$(FLAKE_RUNS))  \
-		$(if $(RELEASE),--release,)
+	$(PYTHON3)                                                             	\
+		-m pytest tests -p no:cacheprovider                                 \
+		--qemu $(QEMU)
 
 # トラブルシューティングに役立つ情報を表示するコマンド
 .PHONY: doctor
