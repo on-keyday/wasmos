@@ -162,6 +162,9 @@ WASMCXXFLAGS += -fno-exceptions -fno-rtti -Dthrow="abort(),(void)"
 WASMCXXFLAGS += -D __FUTILS_FREESTANDING__ 
 WASMCXXFLAGS += -D __FUTILS_FREESTD_NOT_STDC__
 WASMCXXFLAGS += -I $(top_dir)/third_party/futils/src/include
+# add freestd C++ source files
+WASMCXXFLAGS += $(top_dir)/third_party/futils/src/lib/freestd/freestd.cpp
+WASMCXXFLAGS += $(top_dir)/third_party/futils/src/lib/freestd/stub/plt_stub.cpp
 
 
 # Linker flags to build .wasm
