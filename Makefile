@@ -153,18 +153,18 @@ WASMCFLAGS += --target=wasm32
 
 
 # Compiler flags to build .wasm (C++ files)
-WASMCXXFLAGS := $(filter-out -mno-relax -fsanitize=undefined -std=c11, $(CXXFLAGS))
+WASMCXXFLAGS := $(filter-out -mno-relax -fsanitize=undefined -std=c11, $(CFLAGS))
 WASMCXXFLAGS += -std=c++20
 WASMCXXFLAGS += --target=wasm32
-WASMCXXFLAGS += -fno-exceptions -fno-rtti -Dthrow="abort(),(void)"
+WASMCXXFLAGS += -fno-exceptions -fno-rtti -Dthrow="(void)"
 
 # freestd C++ library flags
 WASMCXXFLAGS += -D __FUTILS_FREESTANDING__ 
 WASMCXXFLAGS += -D __FUTILS_FREESTD_NOT_STDC__
 WASMCXXFLAGS += -I $(top_dir)/third_party/futils/src/include
+WASMCXXFLAGS += -I $(top_dir)/third_party/futils/src/include/freestd/
 # add freestd C++ source files
-WASMCXXFLAGS += $(top_dir)/third_party/futils/src/lib/freestd/freestd.cpp
-WASMCXXFLAGS += $(top_dir)/third_party/futils/src/lib/freestd/stub/plt_stub.cpp
+WASMCXXFLAGS += -I $(top_dir)/third_party/futils/src/lib/freestd/
 
 
 # Linker flags to build .wasm
