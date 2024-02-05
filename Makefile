@@ -92,6 +92,7 @@ endif
 #  ビルドに必要なコマンド
 #
 CC        := $(LLVM_PREFIX)clang$(LLVM_SUFFIX)
+CXXC      := $(LLVM_PREFIX)clang++$(LLVM_SUFFIX)
 LD        := $(LLVM_PREFIX)ld.lld$(LLVM_SUFFIX)
 WASMLD    := wasm-ld
 OBJCOPY   := $(LLVM_PREFIX)llvm-objcopy$(LLVM_SUFFIX)
@@ -149,6 +150,19 @@ endif
 # Compiler flags to build .wasm
 WASMCFLAGS := $(filter-out -mno-relax -fsanitize=undefined, $(CFLAGS))
 WASMCFLAGS += --target=wasm32
+
+
+# Compiler flags to build .wasm (C++ files)
+WASMCXXFLAGS := $(filter-out -mno-relax -fsanitize=undefined -std=c11, $(CXXFLAGS))
+WASMCXXFLAGS += -std=c++20
+WASMCXXFLAGS += --target=wasm32
+WASMCXXFLAGS += -fno-exceptions -fno-rtti -Dthrow="abort(),(void)"
+
+# freestd C++ library flags
+WASMCXXFLAGS += -D __FUTILS_FREESTANDING__ 
+WASMCXXFLAGS += -D __FUTILS_FREESTD_NOT_STDC__
+WASMCXXFLAGS += -I $(top_dir)/third_party/futils/src/include
+
 
 # Linker flags to build .wasm
 WASMLDFLAGS :=
@@ -287,6 +301,14 @@ $(BUILD_DIR)/%.wasm.o: %.c Makefile $(BUILD_DIR)/consts.mk libs/common/ipcstub.h
 	$(PROGRESS) CC $<
 	$(MKDIR) -p $(@D)
 	$(CC) $(WASMCFLAGS) -c -o $@ $< -MD -MF $(@:.o=.deps) -MJ $(@:.o=.json)
+
+# Build rule for *.wasm.o with C++
+# Remove compiler flags specific to riscv and add ones for WASM
+$(BUILD_DIR)/%.wasm.o: %.cpp Makefile $(BUILD_DIR)/consts.mk libs/common/ipcstub.h
+	$(PROGRESS) CXX $<
+	$(MKDIR) -p $(@D)
+	$(CXXC) $(WASMCXXFLAGS) -c -o $@ $< -MD -MF $(@:.o=.deps) -MJ $(@:.o=.json)
+
 
 # ビルドディレクトリ下にある (自動生成される) Cファイルのコンパイル規則
 $(BUILD_DIR)/%.o: $(BUILD_DIR)/%.c Makefile $(BUILD_DIR)/consts.mk libs/common/ipcstub.h
