@@ -1,3 +1,6 @@
 [submodule "third_party/wasm-micro-runtime"]
 	path = third_party/wasm-micro-runtime
 	url = https://github.com/bytecodealliance/wasm-micro-runtime
+[submodule "third_party/futils"]
+	path = third_party/futils
+	url = https://github.com/on-keyday/utils
