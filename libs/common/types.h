@@ -22,9 +22,11 @@ typedef uint32_t uintmax_t;
 #endif
 
 // 真偽値
+#ifndef __cplusplus
 typedef char bool;
 #define true  1
 #define false 0
+#endif
 
 // ヌルポインタ
 #define NULL ((void *) 0)
